@@ -3,10 +3,8 @@
   <forward mode="nat"/>
   <domain name="rhel-summit"/>
   <ip address="192.168.150.1" netmask="255.255.255.0">
-      <tftp root='/var/lib/libvirt/boot' server="192.168.150.1" />
     <dhcp>
         <range start="192.168.150.128" end="192.168.150.254"/>
-        <bootp file="BOOTX64.EFI" />
     </dhcp>
   </ip>
 </network>

@@ -49,5 +49,6 @@ podman-pull:
 
 system-setup:
 	sudo usermod -a -G libvirt lab-user
+	sudo dnf install -y jq
 
 clean: clean-pod clean-virt

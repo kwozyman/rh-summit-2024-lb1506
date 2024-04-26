@@ -15,7 +15,7 @@ spec:
     persistentVolumeClaim:
       claimName: summit-registry
   containers:
-  - image: docker.io/library/httpd:latest
+  - image: docker.io/library/httpd:2.4.59
     name: httpd
     ports:
     - containerPort: 80

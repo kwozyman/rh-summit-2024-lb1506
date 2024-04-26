@@ -43,7 +43,7 @@ clean-data:
 	podman volume rm summit-registry
 
 podman-pull:
-	podman pull "${BOOTC_IMAGE}" "${BOOTC_IMAGE_BUILDER}"
+	podman pull "${BOOTC_IMAGE}" "${BOOTC_IMAGE_BUILDER}" docker.io/library/httpd:2.4.59 docker.io/library/registry:2.8.3
 
 system-setup:
 	sudo usermod -a -G libvirt lab-user

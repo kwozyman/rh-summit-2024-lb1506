@@ -1,5 +1,5 @@
 <pool type="dir">
-  <name>rhel-summit</name>
+  <name>summit-storage</name>
   <target>
     <path>/var/lib/libvirt/images/summit</path>
   </target>

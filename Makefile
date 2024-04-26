@@ -33,8 +33,8 @@ virt-clean-vm:
 	virsh --connect "${LIBVIRT_DEFAULT_URI}" undefine foo || echo not defined
 	sudo rm -f /var/lib/libvirt/images/foo.qcow2
 
-pod: clean-pod
-	podman kube play podman-kube/summit-pod.yaml
+pod:
+	podman kube play --replace podman-kube/summit-pod.yaml
 
 clean-pod:
 	podman kube down podman-kube/summit-pod.yaml

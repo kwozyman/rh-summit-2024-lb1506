@@ -9,7 +9,7 @@ spec:
   volumes:
   - name: summit-www
     hostPath:
-      path: /home/kwozyman/src/rh/edge-os/www
+      path: ./www
       type: Directory
   - name: summit-registry
     persistentVolumeClaim:

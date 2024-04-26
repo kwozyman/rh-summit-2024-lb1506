@@ -10,28 +10,27 @@ LIBVIRT_DEFAULT_URI ?= qemu:///system
 LIBVIRT_NETWORK ?= summit-network
 LIBVIRT_STORAGE ?= summit-storage
 
-
 virt-setup: virt-setup-network virt-setup-storage
 
 virt-setup-network:
-	virsh net-create --file libvirt/network.xml
+	virsh --connect "${LIBVIRT_DEFAULT_URI}" net-create --file libvirt/network.xml
 
 virt-setup-storage:
-	virsh pool-create --file libvirt/storage.xml --build
+	virsh --connect "${LIBVIRT_DEFAULT_URI}" pool-create --file libvirt/storage.xml --build
 
 virt-clean-network:
-	virsh net-destroy --network "${LIBVIRT_NETWORK}" || echo not defined
+	virsh --connect "${LIBVIRT_DEFAULT_URI}" net-destroy --network "${LIBVIRT_NETWORK}" || echo not defined
 
 virt-clean-storage:
-	virsh pool-destroy --pool "${LIBVIRT_STORAGE}" || echo not defined
+	virsh --connect "${LIBVIRT_DEFAULT_URI}" pool-destroy --pool "${LIBVIRT_STORAGE}" || echo not defined
 
 virt-vm:
-	#virt-install --connect qemu:///system --install kernel=/var/lib/libvirt/images/summit/vmlinuz,initrd=/var/lib/libvirt/images/summit/initrd.img,kernel_args="inst.stage2=hd:LABEL=RHEL-9-4-0-BaseOS-x86_64 inst.ks=http://192.168.150.1:8088/basic.ks console=ttyS0" --disk size=20 --disk device=cdrom,path=/var/lib/libvirt/images/rhel-9.4-beta-x86_64-boot.iso,format=iso --osinfo rhel9.4 --name foo --memory 4096 --graphics none --noreboot
-	virt-install --connect qemu:///system --disk size=20 --cdrom rhel-9.4-beta-x86_64-custom.iso --osinfo rhel9.4 --name foo --memory 4096
+	#virt-install --connect "${LIBVIRT_DEFAULT_URI}" --install kernel=/var/lib/libvirt/images/summit/vmlinuz,initrd=/var/lib/libvirt/images/summit/initrd.img,kernel_args="inst.stage2=hd:LABEL=RHEL-9-4-0-BaseOS-x86_64 inst.ks=http://192.168.150.1:8088/basic.ks console=ttyS0" --disk size=20 --disk device=cdrom,path=/var/lib/libvirt/images/rhel-9.4-beta-x86_64-boot.iso,format=iso --osinfo rhel9.4 --name foo --memory 4096 --graphics none --noreboot
+	virt-install --connect "${LIBVIRT_DEFAULT_URI}" --disk size=20 --cdrom rhel-9.4-beta-x86_64-custom.iso --osinfo rhel9.4 --name foo --memory 4096
 
 virt-clean-vm:
-	virsh --connect qemu:///system destroy foo || echo not running
-	virsh --connect qemu:///system undefine foo || echo not defined
+	virsh --connect "${LIBVIRT_DEFAULT_URI}" destroy foo || echo not running
+	virsh --connect "${LIBVIRT_DEFAULT_URI}" undefine foo || echo not defined
 	sudo rm -f /var/lib/libvirt/images/foo.qcow2
 
 pod: clean-pod
@@ -45,5 +44,8 @@ clean-data:
 
 podman-pull:
 	podman pull "${BOOTC_IMAGE}" "${BOOTC_IMAGE_BUILDER}"
+
+system-setup:
+	sudo usermod -a -G libvirt lab-user
 
 clean: clean-pod clean-virt

@@ -64,7 +64,7 @@ podman-pull:
 
 system-setup:
 	sudo usermod -a -G libvirt lab-user
-	sudo dnf install -y jq
+	sudo dnf install -y qemu-kvm jq
 	sudo sysctl -w net.ipv4.ip_unprivileged_port_start=80
 	git config pull.rebase true
 

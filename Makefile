@@ -31,7 +31,7 @@ virt-clean-storage:
 
 virt-vm:
 	#virt-install --connect "${LIBVIRT_DEFAULT_URI}" --install kernel=/var/lib/libvirt/images/summit/vmlinuz,initrd=/var/lib/libvirt/images/summit/initrd.img,kernel_args="inst.stage2=hd:LABEL=RHEL-9-4-0-BaseOS-x86_64 inst.ks=http://192.168.150.1:8088/basic.ks console=ttyS0" --disk size=20 --disk device=cdrom,path=/var/lib/libvirt/images/rhel-9.4-beta-x86_64-boot.iso,format=iso --osinfo rhel9.4 --name foo --memory 4096 --graphics none --noreboot
-	virt-install --connect "${LIBVIRT_DEFAULT_URI}" --disk size=50 --cdrom "${ISO_NAME}.iso" --osinfo rhel9.4 --name foo --memory 4096
+	virt-install --connect "${LIBVIRT_DEFAULT_URI}" --disk "pool=${LIBVIRT_STORAGE},size=50" --cdrom "${LIBVIRT_STORAGE_DIR}/${ISO_NAME}-custom.iso" --name bifrost --memory 4096
 
 virt-clean-vm:
 	virsh --connect "${LIBVIRT_DEFAULT_URI}" destroy foo || echo not running

@@ -29,7 +29,7 @@ virt-clean-storage:
 
 virt-vm:
 	#virt-install --connect "${LIBVIRT_DEFAULT_URI}" --install kernel=/var/lib/libvirt/images/summit/vmlinuz,initrd=/var/lib/libvirt/images/summit/initrd.img,kernel_args="inst.stage2=hd:LABEL=RHEL-9-4-0-BaseOS-x86_64 inst.ks=http://192.168.150.1:8088/basic.ks console=ttyS0" --disk size=20 --disk device=cdrom,path=/var/lib/libvirt/images/rhel-9.4-beta-x86_64-boot.iso,format=iso --osinfo rhel9.4 --name foo --memory 4096 --graphics none --noreboot
-	virt-install --connect "${LIBVIRT_DEFAULT_URI}" --disk size=50 --cdrom "${ISO}.iso" --osinfo rhel9.4 --name foo --memory 4096
+	virt-install --connect "${LIBVIRT_DEFAULT_URI}" --disk size=50 --cdrom "${ISO_NAME}.iso" --osinfo rhel9.4 --name foo --memory 4096
 
 virt-clean-vm:
 	virsh --connect "${LIBVIRT_DEFAULT_URI}" destroy foo || echo not running
@@ -42,8 +42,11 @@ ssh:
 	@cat templates/kickstart.ks | sed "s^SSHKEY^$(shell cat ~/.ssh/id_rsa.pub)^g" > config/kickstart.ks
 	@ssh-add ~/.ssh/id_rsa
 
+iso:
+	mkk
+
 iso-download:
-	curl -L -o "${ISO}.iso" "${ISO_URL}"
+	curl -L -o "${ISO_NAME}.iso" "${ISO_URL}"
 
 pod:
 	podman kube play --replace podman-kube/summit-pod.yaml
@@ -63,5 +66,6 @@ system-setup:
 	sudo usermod -a -G libvirt lab-user
 	sudo dnf install -y jq
 	sudo sysctl -w net.ipv4.ip_unprivileged_port_start=80
+	git config pull.rebase true
 
 clean: clean-pod clean-virt

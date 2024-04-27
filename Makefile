@@ -10,6 +10,9 @@ LIBVIRT_DEFAULT_URI ?= qemu:///system
 LIBVIRT_NETWORK ?= summit-network
 LIBVIRT_STORAGE ?= summit-storage
 
+ISO_URL ?= https://mirror.stream.centos.org/9-stream/BaseOS/x86_64/iso/CentOS-Stream-9-20240422.0-x86_64-boot.iso
+ISO_NAME ?= rhel-boot
+
 virt-setup: virt-setup-network virt-setup-storage
 
 virt-setup-network:
@@ -26,7 +29,7 @@ virt-clean-storage:
 
 virt-vm:
 	#virt-install --connect "${LIBVIRT_DEFAULT_URI}" --install kernel=/var/lib/libvirt/images/summit/vmlinuz,initrd=/var/lib/libvirt/images/summit/initrd.img,kernel_args="inst.stage2=hd:LABEL=RHEL-9-4-0-BaseOS-x86_64 inst.ks=http://192.168.150.1:8088/basic.ks console=ttyS0" --disk size=20 --disk device=cdrom,path=/var/lib/libvirt/images/rhel-9.4-beta-x86_64-boot.iso,format=iso --osinfo rhel9.4 --name foo --memory 4096 --graphics none --noreboot
-	virt-install --connect "${LIBVIRT_DEFAULT_URI}" --disk size=20 --cdrom rhel-9.4-beta-x86_64-custom.iso --osinfo rhel9.4 --name foo --memory 4096
+	virt-install --connect "${LIBVIRT_DEFAULT_URI}" --disk size=50 --cdrom "${ISO}.iso" --osinfo rhel9.4 --name foo --memory 4096
 
 virt-clean-vm:
 	virsh --connect "${LIBVIRT_DEFAULT_URI}" destroy foo || echo not running
@@ -38,6 +41,9 @@ ssh:
 	@cat templates/config-qcow2.json | jq ".blueprint.customizations.user[0].key=\"$(shell cat ~/.ssh/id_rsa.pub)\"" > config/config-qcow2.json
 	@cat templates/kickstart.ks | sed "s^SSHKEY^$(shell cat ~/.ssh/id_rsa.pub)^g" > config/kickstart.ks
 	@ssh-add ~/.ssh/id_rsa
+
+iso-download:
+	curl -L -o "${ISO}.iso" "${ISO_URL}"
 
 pod:
 	podman kube play --replace podman-kube/summit-pod.yaml

@@ -33,6 +33,12 @@ virt-clean-vm:
 	virsh --connect "${LIBVIRT_DEFAULT_URI}" undefine foo || echo not defined
 	sudo rm -f /var/lib/libvirt/images/foo.qcow2
 
+ssh:
+	@ssh-keygen -t ed25519 -f ~/.ssh/id_rsa -N ""
+	@cat templates/config-qcow2.json | jq ".blueprint.customizations.user[0].key=\"$(shell cat ~/.ssh/id_rsa.pub)\"" > config/config-qcow2.json
+	@cat templates/kickstart.ks | sed "s^SSHKEY^$(shell cat ~/.ssh/id_rsa.pub)^g" > config/kickstart.ks
+	@ssh-add ~/.ssh/id_rsa
+
 pod:
 	podman kube play --replace podman-kube/summit-pod.yaml
 

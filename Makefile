@@ -44,7 +44,7 @@ ssh:
 	@ssh-add ~/.ssh/id_rsa
 
 iso:
-	mkk
+	sudo mkksiso --ks config/kickstart.ks "${ISO_NAME}.iso" "${LIBVIRT_STORAGE_DIR}/${ISO_NAME}-custom.iso"
 
 iso-download:
 	curl -L -o "${ISO_NAME}.iso" "${ISO_URL}"

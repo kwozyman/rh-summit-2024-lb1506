@@ -10,6 +10,7 @@ LIBVIRT_DEFAULT_URI ?= qemu:///system
 LIBVIRT_NETWORK ?= summit-network
 LIBVIRT_STORAGE ?= summit-storage
 LIBVIRT_STORAGE_DIR ?= /var/lib/libvirt/images/summit
+LIBVIRT_VM_NAME ?= bifrost
 
 ISO_URL ?= https://mirror.stream.centos.org/9-stream/BaseOS/x86_64/iso/CentOS-Stream-9-20240422.0-x86_64-boot.iso
 ISO_NAME ?= rhel-boot
@@ -31,13 +32,14 @@ virt-clean-storage:
 
 virt-vm:
 	virt-install --connect "${LIBVIRT_DEFAULT_URI}" \
+		--name "${LIBVIRT_VM_NAME}" \
 		--disk "pool=${LIBVIRT_STORAGE},size=50" \
 		--network "network=${LIBVIRT_NETWORK}" \
 		--location "${LIBVIRT_STORAGE_DIR}/${ISO_NAME}-custom.iso,kernel=images/pxeboot/vmlinuz,initrd=images/pxeboot/initrd.img" \
 		--extra-args="inst.ks=http://hypervisor:8088/kickstart.ks console=tty0 console=ttyS0,115200n8" \
-		--name bifrost \
 		--memory 4096 \
 		--graphics none \
+		--noreboot
 
 virt-clean-vm:
 	virsh --connect "${LIBVIRT_DEFAULT_URI}" destroy foo || echo not running
@@ -51,7 +53,9 @@ ssh:
 	@ssh-add ~/.ssh/id_rsa
 
 iso:
-	sudo mkksiso --ks config/kickstart.ks "${ISO_NAME}.iso" "${LIBVIRT_STORAGE_DIR}/${ISO_NAME}-custom.iso"
+	sudo rm -f "${LIBVIRT_STORAGE_DIR}/${ISO_NAME}-custom.iso"
+	sudo mkksiso --ks config/kickstart.ks --cmdline "console=tty0 console=ttyS0,115200n8"
+		"${ISO_NAME}.iso" "${LIBVIRT_STORAGE_DIR}/${ISO_NAME}-custom.iso"
 
 iso-download:
 	curl -L -o "${ISO_NAME}.iso" "${ISO_URL}"

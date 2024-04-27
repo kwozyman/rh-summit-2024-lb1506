@@ -9,11 +9,13 @@ spec:
   volumes:
   - name: summit-www
     hostPath:
-      path: ./www
+      path: ./config
       type: Directory
   - name: summit-registry
     persistentVolumeClaim:
       claimName: summit-registry
+  #hostNetwork: true
+  hostname: hypervisor
   containers:
   - image: docker.io/library/httpd:2.4.59
     name: httpd

@@ -1,0 +1,17 @@
+{
+  "blueprint": {
+    "customizations": {
+      "user": [
+        {
+          "name": "cloud-user",
+          "password": "bifrost",
+          "key": "",
+          "groups": [
+            "wheel"
+          ]
+        }
+      ]
+    }
+  }
+}
+

@@ -27,6 +27,7 @@ virt-clean-network:
 
 virt-clean-storage:
 	virsh --connect "${LIBVIRT_DEFAULT_URI}" pool-destroy --pool "${LIBVIRT_STORAGE}" || echo not defined
+	sudo rm -rf "${LIBVIRT_STORAGE_DIR}"
 
 virt-vm:
 	#virt-install --connect "${LIBVIRT_DEFAULT_URI}" --install kernel=/var/lib/libvirt/images/summit/vmlinuz,initrd=/var/lib/libvirt/images/summit/initrd.img,kernel_args="inst.stage2=hd:LABEL=RHEL-9-4-0-BaseOS-x86_64 inst.ks=http://192.168.150.1:8088/basic.ks console=ttyS0" --disk size=20 --disk device=cdrom,path=/var/lib/libvirt/images/rhel-9.4-beta-x86_64-boot.iso,format=iso --osinfo rhel9.4 --name foo --memory 4096 --graphics none --noreboot

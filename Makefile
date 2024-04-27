@@ -9,6 +9,7 @@ BOOTC_IMAGE_BUILDER ?= quay.io/centos-bootc/bootc-image-builder:latest
 LIBVIRT_DEFAULT_URI ?= qemu:///system
 LIBVIRT_NETWORK ?= summit-network
 LIBVIRT_STORAGE ?= summit-storage
+LIBVIRT_STORAGE_DIR ?= /var/lib/libvirt/images/summit
 
 ISO_URL ?= https://mirror.stream.centos.org/9-stream/BaseOS/x86_64/iso/CentOS-Stream-9-20240422.0-x86_64-boot.iso
 ISO_NAME ?= rhel-boot
@@ -19,7 +20,7 @@ virt-setup-network:
 	virsh --connect "${LIBVIRT_DEFAULT_URI}" net-create --file libvirt/network.xml
 
 virt-setup-storage:
-	virsh --connect "${LIBVIRT_DEFAULT_URI}" pool-create --file libvirt/storage.xml --build
+	virsh --connect "${LIBVIRT_DEFAULT_URI}" pool-create-as --name "${LIBVIRT_STORAGE}" --target "${LIBVIRT_STORAGE_DIR}" --type dir --build
 
 virt-clean-network:
 	virsh --connect "${LIBVIRT_DEFAULT_URI}" net-destroy --network "${LIBVIRT_NETWORK}" || echo not defined

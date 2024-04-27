@@ -1,7 +1,0 @@
-<pool type="dir">
-  <name>summit-storage</name>
-  <target>
-    <path>/var/lib/libvirt/images/summit</path>
-  </target>
-</pool>
-

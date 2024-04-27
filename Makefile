@@ -62,5 +62,6 @@ podman-pull:
 system-setup:
 	sudo usermod -a -G libvirt lab-user
 	sudo dnf install -y jq
+	sudo sysctl -w net.ipv4.ip_unprivileged_port_start=80
 
 clean: clean-pod clean-virt

@@ -17,6 +17,8 @@ ISO_NAME ?= rhel-boot
 
 CONTAINER ?= localhost/http:latest
 
+.PHONY: certs
+
 virt-setup: virt-setup-network virt-setup-storage
 
 virt-setup-network:

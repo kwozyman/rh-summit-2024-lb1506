@@ -111,3 +111,7 @@ build:
 	podman build --file "${CONTAINERFILE}" --tag "${CONTAINER}"
 push:
 	podman push "${CONTAINER}"
+run-test:
+	podman run --rm --name http-test --detach --publish 80:80 "${CONTAINER}"
+stop-test:
+	podman stop http-test

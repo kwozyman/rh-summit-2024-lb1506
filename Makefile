@@ -15,6 +15,8 @@ LIBVIRT_VM_NAME ?= bifrost
 ISO_URL ?= https://mirror.stream.centos.org/9-stream/BaseOS/x86_64/iso/CentOS-Stream-9-20240422.0-x86_64-boot.iso
 ISO_NAME ?= rhel-boot
 
+CONTAINER ?= localhost/http:latest
+
 virt-setup: virt-setup-network virt-setup-storage
 
 virt-setup-network:
@@ -54,8 +56,7 @@ ssh:
 
 iso:
 	sudo rm -f "${LIBVIRT_STORAGE_DIR}/${ISO_NAME}-custom.iso"
-	sudo mkksiso --ks config/kickstart.ks --cmdline "console=tty0 console=ttyS0,115200n8"
-		"${ISO_NAME}.iso" "${LIBVIRT_STORAGE_DIR}/${ISO_NAME}-custom.iso"
+	bash bin/embed-container "${CONTAINER}" "${LIBVIRT_STORAGE_DIR}/${ISO_NAME}}.iso" "${LIBVIRT_STORAGE_DIR}/${ISO_NAME}-custom.iso"
 
 iso-download:
 	curl -L -o "${ISO_NAME}.iso" "${ISO_URL}"

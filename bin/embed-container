@@ -1,0 +1,47 @@
+#!/bin/bash
+
+set -e
+
+standard_ks () {
+  echo text
+  echo network --bootproto=dhcp --device=link --activate
+  echo clearpart --all --initlabel --disklabel=gpt
+  echo reqpart --add-boot
+  echo part / --grow --fstype xfs
+  echo ostreecontainer --url=/run/install/repo/container --transport=oci --no-signature-verification
+  echo firewall --disabled
+  echo services --enabled=sshd
+  echo user --name=cloud-user --groups=wheel --plaintext --password=bifrost
+  echo rootpw bifrost
+  echo poweroff
+}
+
+
+if [ "$#" -ne 3 ]; then
+    echo This script takes precisely 2 arguments:
+    echo "  - container image to be embedded in iso"
+    echo "  - path to original iso"
+    echo "  - output path of new iso"
+    exit 1
+fi
+
+podman image exists "$1" || echo "$1" container image does not exist
+
+if [ ! -f "$2" ]; then
+    echo Cannot find "$2" as the starting iso
+    echo You can download RHEL 9.4 iso from https://developers.redhat.com/products/rhel/download
+    echo or CentOS Stream 9 from https://mirror.stream.centos.org/9-stream/BaseOS/x86_64/iso/CentOS-Stream-9-20240422.0-x86_64-boot.iso
+    exit 1
+fi
+
+TEMPDIR=$(mktemp --directory)
+
+echo Unpack container image
+mkdir -p "${TEMPDIR}/container"
+skopeo copy "containers-storage:$1" "oci:${TEMPDIR}/container/"
+standard_ks > "${TEMPDIR}/local.ks"
+echo Pack iso to "$2"
+cd "${TEMPDIR}"
+mkksiso --ks local.ks --add container/ "$2" "$3"
+rm -rf "${TEMPDIR}"
+echo Done

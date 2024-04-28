@@ -96,6 +96,7 @@ setup-pull:
 system-setup:
 	sudo usermod -a -G libvirt lab-user
 	sudo dnf install -y qemu-kvm jq
+	sudo systemctl start libvirtd
 	sudo sysctl -w net.ipv4.ip_unprivileged_port_start=80
 	git config pull.rebase true
 	sudo -u lab-user bash

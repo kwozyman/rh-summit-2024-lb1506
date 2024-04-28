@@ -15,7 +15,7 @@ LIBVIRT_VM_NAME ?= bifrost
 ISO_URL ?= https://mirror.stream.centos.org/9-stream/BaseOS/x86_64/iso/CentOS-Stream-9-20240422.0-x86_64-boot.iso
 ISO_NAME ?= rhel-boot
 
-CONTAINER ?= localhost/http:latest
+CONTAINER ?= summit.registry/bifrost:latest
 
 .PHONY: certs
 
@@ -42,7 +42,7 @@ virt-vm:
 		--disk "pool=${LIBVIRT_STORAGE},size=50" \
 		--network "network=${LIBVIRT_NETWORK},mac=de:ad:be:ef:01:01" \
 		--location "${LIBVIRT_STORAGE_DIR}/${ISO_NAME}-custom.iso,kernel=images/pxeboot/vmlinuz,initrd=images/pxeboot/initrd.img" \
-		--extra-args="inst.ks=http://hypervisor:8088/kickstart.ks console=tty0 console=ttyS0,115200n8" \
+		--extra-args="inst.ks=hd:LABEL=CentOS-Stream-9-BaseOS-x86_64:/local.ks console=tty0 console=ttyS0,115200n8" \
 		--memory 4096 \
 		--graphics none \
 		--noreboot
@@ -59,7 +59,7 @@ ssh:
 
 iso:
 	sudo rm -f "${LIBVIRT_STORAGE_DIR}/${ISO_NAME}-custom.iso"
-	bash bin/embed-container "${CONTAINER}" "${LIBVIRT_STORAGE_DIR}/${ISO_NAME}}.iso" "${LIBVIRT_STORAGE_DIR}/${ISO_NAME}-custom.iso"
+	sudo bash bin/embed-container "${CONTAINER}" "${LIBVIRT_STORAGE_DIR}/${ISO_NAME}.iso" "${LIBVIRT_STORAGE_DIR}/${ISO_NAME}-custom.iso"
 
 iso-download:
 	sudo curl -L -o "${LIBVIRT_STORAGE_DIR}/${ISO_NAME}.iso" "${ISO_URL}"

@@ -42,6 +42,9 @@ skopeo copy "containers-storage:$1" "oci:${TEMPDIR}/container/"
 standard_ks > "${TEMPDIR}/local.ks"
 echo Pack iso to "$2"
 cd "${TEMPDIR}"
-mkksiso --ks local.ks --add container/ "$2" "$3"
+mkksiso --ks local.ks --add container/ \
+     --cmdline "console=tty0 console=ttyS0,115200n8" \
+     --rm-args "quiet" \
+    "$2" "$3"
 rm -rf "${TEMPDIR}"
 echo Done

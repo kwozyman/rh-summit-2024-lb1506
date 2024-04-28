@@ -40,7 +40,7 @@ virt-vm:
 	virt-install --connect "${LIBVIRT_DEFAULT_URI}" \
 		--name "${LIBVIRT_VM_NAME}" \
 		--disk "pool=${LIBVIRT_STORAGE},size=50" \
-		--network "network=${LIBVIRT_NETWORK}" \
+		--network "network=${LIBVIRT_NETWORK},mac=de:ad:be:ef:01:01" \
 		--location "${LIBVIRT_STORAGE_DIR}/${ISO_NAME}-custom.iso,kernel=images/pxeboot/vmlinuz,initrd=images/pxeboot/initrd.img" \
 		--extra-args="inst.ks=http://hypervisor:8088/kickstart.ks console=tty0 console=ttyS0,115200n8" \
 		--memory 4096 \

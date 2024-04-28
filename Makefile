@@ -30,6 +30,7 @@ vm-clean-all: vm-clean-vm vm-clean-network vm-clean-storage
 
 vm-setup-network:
 	grep summit.registry /etc/hosts || sudo bash -c "echo 192.168.150.1 summit.registry >> /etc/hosts"
+	grep bifrost-vm /etc/hosts || sudo bash -c "echo 192.168.150.100 bifrost-vm >> /etc/hosts"
 	virsh --connect "${LIBVIRT_DEFAULT_URI}" net-create --file libvirt/network.xml
 
 vm-setup-storage:
@@ -43,6 +44,8 @@ vm-clean-storage:
 	sudo rm -rf "${LIBVIRT_STORAGE_DIR}"
 
 vm:
+	ssh-keygen -R bifrost-vm
+	ssh-keygen -R 192.168.150.100
 	virt-install --connect "${LIBVIRT_DEFAULT_URI}" \
 		--name "${LIBVIRT_VM_NAME}" \
 		--disk "pool=${LIBVIRT_STORAGE},size=50" \

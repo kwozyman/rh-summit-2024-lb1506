@@ -19,24 +19,26 @@ CONTAINER ?= summit.registry/bifrost:latest
 
 .PHONY: certs
 
-virt-setup: virt-setup-network virt-setup-storage
-virt-clean: virt-clean-vm virt-clean-network virt-clean-storage
+clean: vm-clean iso-clean certs-clean registry-clean
 
-virt-setup-network:
+vm-setup: virt-setup-network virt-setup-storage
+vm-clean: virt-clean-vm virt-clean-network virt-clean-storage
+
+vm-setup-network:
 	grep summit.registry /etc/hosts || sudo echo 192.168.150.1 summit.registry >> /etc/hosts
 	virsh --connect "${LIBVIRT_DEFAULT_URI}" net-create --file libvirt/network.xml
 
-virt-setup-storage:
+vm-setup-storage:
 	virsh --connect "${LIBVIRT_DEFAULT_URI}" pool-create-as --name "${LIBVIRT_STORAGE}" --target "${LIBVIRT_STORAGE_DIR}" --type dir --build
 
-virt-clean-network:
+vm-clean-network:
 	virsh --connect "${LIBVIRT_DEFAULT_URI}" net-destroy --network "${LIBVIRT_NETWORK}" || echo not defined
 
-virt-clean-storage:
+vm-clean-storage:
 	virsh --connect "${LIBVIRT_DEFAULT_URI}" pool-destroy --pool "${LIBVIRT_STORAGE}" || echo not defined
 	sudo rm -rf "${LIBVIRT_STORAGE_DIR}"
 
-virt-vm:
+vm:
 	virt-install --connect "${LIBVIRT_DEFAULT_URI}" \
 		--name "${LIBVIRT_VM_NAME}" \
 		--disk "pool=${LIBVIRT_STORAGE},size=50" \
@@ -47,7 +49,7 @@ virt-vm:
 		--graphics none \
 		--noreboot
 
-virt-clean-vm:
+vm-clean:
 	@virsh --connect "${LIBVIRT_DEFAULT_URI}" destroy "${LIBVIRT_VM_NAME}" || echo not running
 	@virsh --connect "${LIBVIRT_DEFAULT_URI}" undefine "${LIBVIRT_VM_NAME}" --remove-all-storage || echo not defined
 
@@ -64,28 +66,32 @@ iso:
 iso-download:
 	sudo curl -L -o "${LIBVIRT_STORAGE_DIR}/${ISO_NAME}.iso" "${ISO_URL}"
 
+iso-clean:
+	sudo rm -f "${LIBVIRT_STORAGE_DIR}/${ISO_NAME}-custom.iso"
+
 certs:
 	openssl req -new -nodes -x509 -days 365 -keyout certs/ca.key -out certs/ca.crt -config certs/san.cnf
 
-pod:
+certs-clean:
+	rm -f certs/ca.crt certs/ca.key
+
+registry:
 	sudo cp certs/004-summit.conf /etc/containers/registries.conf.d/004-summit.conf
 	podman kube play --replace podman-kube/summit-pod.yaml
 
-clean-pod:
+registry-stop:
 	@podman kube down podman-kube/summit-pod.yaml || echo no started
 
-clean-data:
+registry-clean:
 	podman volume rm summit-registry || echo not found
 
-podman-pull:
+setup-pull:
 	podman pull "${BOOTC_IMAGE}" "${BOOTC_IMAGE_BUILDER}" \
 		registry.access.redhat.com/ubi9/ubi-minimal registry.access.redhat.com/ubi9/ubi \
 		docker.io/library/httpd:2.4.59 docker.io/library/registry:2.8.3
 
-system-setup:
+setup-system:
 	sudo usermod -a -G libvirt lab-user
 	sudo dnf install -y qemu-kvm jq
 	sudo sysctl -w net.ipv4.ip_unprivileged_port_start=80
 	git config pull.rebase true
-
-clean: clean-pod clean-virt

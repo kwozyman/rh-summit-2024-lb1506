@@ -1,4 +1,7 @@
+# text based install
 text
+
+# generic network config
 network --bootproto=dhcp --device=link --activate
 
 # Basic partitioning
@@ -8,7 +11,7 @@ part / --grow --fstype xfs
 
 # Here's where we reference the container image to install - notice the kickstart
 # has no `%packages` section!  What's being installed here is a container image.
-ostreecontainer --url quay.io/[my_account]/lamp-bootc:latest --no-signature-verification
+ostreecontainer --url quay.io/[my_account]/lamp-bootc:latest
 
 firewall --disabled
 services --enabled=sshd
@@ -18,6 +21,6 @@ user --name=cloud-user --groups=wheel --plaintext --password=bifrost
 sshkey --username cloud-user "SSHKEY"
 
 # if desired, inject a SSH key for root
-rootpw --iscrypted locked
+rootpw bifrost
 sshkey --username root "SSHKEY" #paste your ssh key here
 poweroff

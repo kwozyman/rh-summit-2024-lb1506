@@ -22,6 +22,7 @@ CONTAINER ?= localhost/http:latest
 virt-setup: virt-setup-network virt-setup-storage
 
 virt-setup-network:
+	grep summit.registry /etc/hosts || sudo echo 192.168.150.1 summit.registry >> /etc/hosts
 	virsh --connect "${LIBVIRT_DEFAULT_URI}" net-create --file libvirt/network.xml
 
 virt-setup-storage:

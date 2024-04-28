@@ -18,4 +18,4 @@ subjectAltName = @alt_names
 [alt_names]
 IP.1 = 192.168.150.1
 DNS.1 = hypervisor
-DNS.2 = summit-registry
+DNS.2 = summit.registry

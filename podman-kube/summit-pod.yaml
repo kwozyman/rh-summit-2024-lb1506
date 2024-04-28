@@ -18,7 +18,7 @@ spec:
     hostPath:
       path: ./certs
       type: Directory
-  hostname: hypervisor
+  hostname: summit.registry
   containers:
   - image: docker.io/library/httpd:2.4.59
     name: httpd

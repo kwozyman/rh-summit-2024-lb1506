@@ -20,18 +20,6 @@ spec:
       type: Directory
   hostname: summit.registry
   containers:
-  - image: docker.io/library/httpd:2.4.59
-    name: httpd
-    ports:
-    - containerPort: 80
-      hostPort: 8088
-    securityContext:
-      seLinuxOptions:
-        type: spc_t
-    volumeMounts:
-    - mountPath: /usr/local/apache2/htdocs
-      name: summit-www
-      readOnly: true
   - image: docker.io/library/registry:2.8.3
     name: registry
     env:
@@ -49,3 +37,15 @@ spec:
         name: summit-registry
       - mountPath: /certs
         name: registry-certs
+#  - image: docker.io/library/httpd:2.4.59
+#    name: httpd
+#    ports:
+#    - containerPort: 80
+#      hostPort: 8088
+#    securityContext:
+#      seLinuxOptions:
+#        type: spc_t
+#    volumeMounts:
+#    - mountPath: /usr/local/apache2/htdocs
+#      name: summit-www
+#      readOnly: true

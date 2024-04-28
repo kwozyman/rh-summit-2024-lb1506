@@ -18,6 +18,8 @@ ISO_NAME ?= rhel-boot
 CONTAINER ?= summit.registry/bifrost:latest
 CONTAINERFILE ?= Containerfile
 
+REGISTRY_POD ?= registry-pod.yaml
+
 .PHONY: certs
 
 setup: setup-pull vm-setup iso-download registry-certs
@@ -78,7 +80,7 @@ iso-clean:
 
 registry:
 	sudo cp certs/004-summit.conf /etc/containers/registries.conf.d/004-summit.conf
-	podman kube play --replace podman-kube/summit-pod.yaml
+	podman kube play --replace "${REGISTRY_POD}"
 
 registry-certs:
 	openssl req -new -nodes -x509 -days 365 -keyout certs/ca.key -out certs/ca.crt -config certs/san.cnf
@@ -87,7 +89,7 @@ registry-certs-clean:
 	rm -f certs/ca.crt certs/ca.key
 
 registry-stop:
-	@podman kube down podman-kube/summit-pod.yaml || echo no started
+	@podman kube down "${REGISTRY_POD}" || echo no started
 
 registry-purge:
 	podman volume rm summit-registry || echo not found

@@ -19,7 +19,10 @@ CONTAINER ?= summit.registry/bifrost:latest
 
 .PHONY: certs
 
+setup: setup-system setup-pull iso-download certs 
 clean: vm-clean iso-clean certs-clean registry-clean
+
+setup-registry: registry-certs registry
 
 vm-setup: virt-setup-network virt-setup-storage
 vm-clean: virt-clean-vm virt-clean-network virt-clean-storage
@@ -69,20 +72,20 @@ iso-download:
 iso-clean:
 	sudo rm -f "${LIBVIRT_STORAGE_DIR}/${ISO_NAME}-custom.iso"
 
-certs:
-	openssl req -new -nodes -x509 -days 365 -keyout certs/ca.key -out certs/ca.crt -config certs/san.cnf
-
-certs-clean:
-	rm -f certs/ca.crt certs/ca.key
-
 registry:
 	sudo cp certs/004-summit.conf /etc/containers/registries.conf.d/004-summit.conf
 	podman kube play --replace podman-kube/summit-pod.yaml
 
+registry-certs:
+	openssl req -new -nodes -x509 -days 365 -keyout certs/ca.key -out certs/ca.crt -config certs/san.cnf
+
+registry-certs-clean:
+	rm -f certs/ca.crt certs/ca.key
+
 registry-stop:
 	@podman kube down podman-kube/summit-pod.yaml || echo no started
 
-registry-clean:
+registry-purge:
 	podman volume rm summit-registry || echo not found
 
 setup-pull:
@@ -92,6 +95,7 @@ setup-pull:
 
 setup-system:
 	sudo usermod -a -G libvirt lab-user
+	newgrp -
 	sudo dnf install -y qemu-kvm jq
 	sudo sysctl -w net.ipv4.ip_unprivileged_port_start=80
 	git config pull.rebase true

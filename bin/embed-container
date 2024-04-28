@@ -28,8 +28,6 @@ if [ "$#" -ne 3 ]; then
     exit 1
 fi
 
-podman image exists "$1" || echo "$1" container image does not exist
-
 if [ ! -f "$2" ]; then
     echo Cannot find "$2" as the starting iso
     echo You can download RHEL 9.4 iso from https://developers.redhat.com/products/rhel/download
@@ -41,7 +39,7 @@ TEMPDIR=$(mktemp --directory)
 
 echo Unpack container image
 mkdir -p "${TEMPDIR}/container"
-skopeo copy "containers-storage:$1" "oci:${TEMPDIR}/container/"
+skopeo copy "docker://$1" "oci:${TEMPDIR}/container/"
 standard_ks > "${TEMPDIR}/local.ks"
 echo Pack iso to "$2"
 cd "${TEMPDIR}"

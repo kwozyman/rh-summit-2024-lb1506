@@ -26,7 +26,7 @@ clean: vm-clean iso-clean certs-clean registry-clean
 setup-registry: registry-certs registry
 
 vm-setup: vm-setup-network vm-setup-storage
-vm-clean: vm-clean-vm vm-clean-network vm-clean-storage
+vm-clean-all: vm-clean-vm vm-clean-network vm-clean-storage
 
 vm-setup-network:
 	grep summit.registry /etc/hosts || sudo bash -c "echo 192.168.150.1 summit.registry >> /etc/hosts"

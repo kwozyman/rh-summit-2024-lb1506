@@ -61,6 +61,10 @@ iso:
 iso-download:
 	curl -L -o "${ISO_NAME}.iso" "${ISO_URL}"
 
+certs:
+	openssl genrsa 1024 > certs/domain.key
+	openssl req -new -x509 -nodes -sha1 -days 265 -key certs/domain.key -out certs/domain.crt -config certs/san.cnf
+
 pod:
 	podman kube play --replace podman-kube/summit-pod.yaml
 

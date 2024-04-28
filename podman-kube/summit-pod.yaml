@@ -14,7 +14,10 @@ spec:
   - name: summit-registry
     persistentVolumeClaim:
       claimName: summit-registry
-  #hostNetwork: true
+  - name: registry-certs
+    hostPath:
+      path: ./certs
+      type: Directory
   hostname: hypervisor
   containers:
   - image: docker.io/library/httpd:2.4.59
@@ -31,9 +34,18 @@ spec:
       readOnly: true
   - image: docker.io/library/registry:2.8.3
     name: registry
+    env:
+      - name: REGISTRY_HTTP_TLS_CERTIFICATE
+        value: /certs/domain.crt
+      - name: REGISTRY_HTTP_TLS_KEY
+        value: /certs/domain.key
+      - name: REGISTRY_HTTP_ADDR
+        value: 0.0.0.0:443
     ports:
     - containerPort: 5000
       hostPort: 5000
     volumeMounts:
       - mountPath: /var/lib/registry
         name: summit-registry
+      - mountPath: /certs
+        name: registry-certs

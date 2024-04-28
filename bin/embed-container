@@ -14,7 +14,7 @@ standard_ks () {
   if [ -f ~/.ssh/id_rsa.pub ]; then
       echo sshkey --username bifrost "$(cat ~/.ssh/id_rsa.pub)"
   fi
-  echo user --name=bifrost --groups=wheel --plaintext --password=bifrost
+  echo user --name="lab-user" --groups=wheel --plaintext --password=bifrost
   echo rootpw bifrost
   echo poweroff
 }

@@ -62,7 +62,7 @@ iso:
 	bash bin/embed-container "${CONTAINER}" "${LIBVIRT_STORAGE_DIR}/${ISO_NAME}}.iso" "${LIBVIRT_STORAGE_DIR}/${ISO_NAME}-custom.iso"
 
 iso-download:
-	curl -L -o "${ISO_NAME}.iso" "${ISO_URL}"
+	sudo curl -L -o "${LIBVIRT_STORAGE_DIR}/${ISO_NAME}.iso" "${ISO_URL}"
 
 certs:
 	openssl req -new -nodes -x509 -days 365 -keyout certs/ca.key -out certs/ca.crt -config certs/san.cnf

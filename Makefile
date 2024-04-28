@@ -19,13 +19,13 @@ CONTAINER ?= summit.registry/bifrost:latest
 
 .PHONY: certs
 
-setup: setup-system setup-pull iso-download certs 
+setup: setup-pull vm-setup iso-download registry-certs
 clean: vm-clean iso-clean certs-clean registry-clean
 
 setup-registry: registry-certs registry
 
-vm-setup: virt-setup-network virt-setup-storage
-vm-clean: virt-clean-vm virt-clean-network virt-clean-storage
+vm-setup: vm-setup-network vm-setup-storage
+vm-clean: vm-clean-vm vm-clean-network vm-clean-storage
 
 vm-setup-network:
 	grep summit.registry /etc/hosts || sudo echo 192.168.150.1 summit.registry >> /etc/hosts
@@ -93,7 +93,7 @@ setup-pull:
 		registry.access.redhat.com/ubi9/ubi-minimal registry.access.redhat.com/ubi9/ubi \
 		docker.io/library/httpd:2.4.59 docker.io/library/registry:2.8.3
 
-setup-system:
+system-setup:
 	sudo usermod -a -G libvirt lab-user
 	sudo dnf install -y qemu-kvm jq
 	sudo sysctl -w net.ipv4.ip_unprivileged_port_start=80

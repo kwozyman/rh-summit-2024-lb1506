@@ -11,7 +11,10 @@ standard_ks () {
   echo ostreecontainer --url=/run/install/repo/container --transport=oci --no-signature-verification
   echo firewall --disabled
   echo services --enabled=sshd
-  echo user --name=cloud-user --groups=wheel --plaintext --password=bifrost
+  if [ -f ~/.ssh/id_rsa.pub ]; then
+      echo sshkey --username bifrost "$(cat ~/.ssh/id_rsa.pub)"
+  fi
+  echo user --name=bifrost --groups=wheel --plaintext --password=bifrost
   echo rootpw bifrost
   echo poweroff
 }

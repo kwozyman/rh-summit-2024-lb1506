@@ -68,6 +68,7 @@ certs:
 	openssl req -new -nodes -x509 -days 365 -keyout certs/ca.key -out certs/ca.crt -config certs/san.cnf
 
 pod:
+	sudo cp certs/004-summit.conf /etc/containers/registries.conf.d/004-summit.conf
 	podman kube play --replace podman-kube/summit-pod.yaml
 
 clean-pod:

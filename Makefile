@@ -20,6 +20,7 @@ CONTAINER ?= localhost/http:latest
 .PHONY: certs
 
 virt-setup: virt-setup-network virt-setup-storage
+virt-clean: virt-clean-vm virt-clean-network virt-clean-storage
 
 virt-setup-network:
 	grep summit.registry /etc/hosts || sudo echo 192.168.150.1 summit.registry >> /etc/hosts
@@ -71,10 +72,10 @@ pod:
 	podman kube play --replace podman-kube/summit-pod.yaml
 
 clean-pod:
-	podman kube down podman-kube/summit-pod.yaml
+	@podman kube down podman-kube/summit-pod.yaml || echo no started
 
 clean-data:
-	podman volume rm summit-registry
+	podman volume rm summit-registry || echo not found
 
 podman-pull:
 	podman pull "${BOOTC_IMAGE}" "${BOOTC_IMAGE_BUILDER}" \

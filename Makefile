@@ -16,6 +16,7 @@ ISO_URL ?= https://mirror.stream.centos.org/9-stream/BaseOS/x86_64/iso/CentOS-St
 ISO_NAME ?= rhel-boot
 
 CONTAINER ?= summit.registry/bifrost:latest
+CONTAINERFILE ?= Containerfile
 
 .PHONY: certs
 
@@ -100,3 +101,8 @@ system-setup:
 	sudo sysctl -w net.ipv4.ip_unprivileged_port_start=80
 	git config pull.rebase true
 	sudo -u lab-user bash
+
+build:
+	podman build --file "${CONTAINERFILE}" --tag "${CONTAINER}"
+push:
+	podman push "${CONTAINER}"

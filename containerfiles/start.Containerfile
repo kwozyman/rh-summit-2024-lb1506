@@ -1,4 +1,4 @@
-FROM quay.io/centos-bootc/centos-bootc:stream9
+FROM registry.access.redhat.com/ubi9/ubi-minimal
 
 RUN dnf install -y httpd
 RUN echo Hello RedHat > /var/www/html/index.html

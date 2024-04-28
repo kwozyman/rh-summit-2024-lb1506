@@ -1,18 +1,19 @@
 [req]
-default_bits  = 2048
+default_bits  = 4096
+default_md = sha256
 distinguished_name = req_distinguished_name
-req_extensions = req_ext
 x509_extensions = v3_req
 prompt = no
 [req_distinguished_name]
-countryName = XX
-stateOrProvinceName = N/A
-localityName = N/A
-organizationName = Self-signed certificate
-commonName = 120.0.0.1: Self-signed certificate
-[req_ext]
-subjectAltName = @alt_names
+C = IN
+ST = HR
+L = Denver
+O = RedHat
+OU = Summit
+CN = 192.168.150.1
 [v3_req]
+keyUsage = keyEncipherment, dataEncipherment
+extendedKeyUsage = serverAuth
 subjectAltName = @alt_names
 [alt_names]
 IP.1 = 192.168.150.1

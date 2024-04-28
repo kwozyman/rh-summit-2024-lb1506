@@ -36,14 +36,14 @@ spec:
     name: registry
     env:
       - name: REGISTRY_HTTP_TLS_CERTIFICATE
-        value: /certs/domain.crt
+        value: /certs/ca.crt
       - name: REGISTRY_HTTP_TLS_KEY
-        value: /certs/domain.key
+        value: /certs/ca.key
       - name: REGISTRY_HTTP_ADDR
         value: 0.0.0.0:443
     ports:
-    - containerPort: 5000
-      hostPort: 5000
+    - containerPort: 443
+      hostPort: 443
     volumeMounts:
       - mountPath: /var/lib/registry
         name: summit-registry

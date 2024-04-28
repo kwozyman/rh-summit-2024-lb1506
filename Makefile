@@ -47,9 +47,8 @@ virt-vm:
 		--noreboot
 
 virt-clean-vm:
-	virsh --connect "${LIBVIRT_DEFAULT_URI}" destroy foo || echo not running
-	virsh --connect "${LIBVIRT_DEFAULT_URI}" undefine foo || echo not defined
-	sudo rm -f /var/lib/libvirt/images/foo.qcow2
+	@virsh --connect "${LIBVIRT_DEFAULT_URI}" destroy "${LIBVIRT_VM_NAME}" || echo not running
+	@virsh --connect "${LIBVIRT_DEFAULT_URI}" undefine "${LIBVIRT_VM_NAME}" --remove-all-storage || echo not defined
 
 ssh:
 	@ssh-keygen -t ed25519 -f ~/.ssh/id_rsa -N ""

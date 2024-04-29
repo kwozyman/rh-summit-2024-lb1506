@@ -12,7 +12,7 @@ LIBVIRT_STORAGE ?= summit-storage
 LIBVIRT_STORAGE_DIR ?= /var/lib/libvirt/images/summit
 LIBVIRT_VM_NAME ?= bifrost
 
-ISO_URL ?= https://mirror.stream.centos.org/9-stream/BaseOS/x86_64/iso/CentOS-Stream-9-20240422.0-x86_64-boot.iso
+ISO_URL ?= https://mirror.stream.centos.org/9-stream/BaseOS/x86_64/iso/CentOS-Stream-9-latest-x86_64-boot.iso
 ISO_NAME ?= rhel-boot
 
 CONTAINER ?= summit.registry/bifrost:latest

@@ -12,6 +12,7 @@
     <dhcp>
         <range start="192.168.150.128" end="192.168.150.254"/>
         <host mac="de:ad:be:ef:01:01" name="bifrost-vm" ip="192.168.150.100" />
+        <host mac="de:ad:be:ef:01:02" name="regular-vm" ip="192.168.150.101" />
     </dhcp>
   </ip>
 </network>

@@ -33,6 +33,7 @@ vm-clean-all: vm-clean vm-clean-network vm-clean-storage
 vm-setup-network:
 	grep summit.registry /etc/hosts || sudo bash -c "echo 192.168.150.1 summit.registry >> /etc/hosts"
 	grep bifrost-vm /etc/hosts || sudo bash -c "echo 192.168.150.100 bifrost-vm >> /etc/hosts"
+	grep regular-vm /etc/hosts || sudo bash -c "echo 192.168.150.101 regular-vm >> /etc/hosts"
 	virsh --connect "${LIBVIRT_DEFAULT_URI}" net-create --file libvirt/network.xml
 
 vm-setup-storage:
@@ -57,6 +58,27 @@ vm:
 		--memory 4096 \
 		--graphics none \
 		--noreboot
+
+vm-regular:
+	ssh-keygen -R regular-vm
+	ssh-keygen -R 192.168.150.101
+	sudo rm -f "${LIBVIRT_STORAGE_DIR}/${ISO_NAME}-regular.iso"
+	sudo mkksiso --ks templates/classic.ks "${LIBVIRT_STORAGE_DIR}/${ISO_NAME}.iso" "${LIBVIRT_STORAGE_DIR}/${ISO_NAME}-regular.iso"
+	virt-install --connect "${LIBVIRT_DEFAULT_URI}" \
+		--name "regular" \
+		--disk "pool=${LIBVIRT_STORAGE},size=50" \
+		--network "network=${LIBVIRT_NETWORK},mac=de:ad:be:ef:01:02" \
+		--location "${LIBVIRT_STORAGE_DIR}/${ISO_NAME}-regular.iso,kernel=images/pxeboot/vmlinuz,initrd=images/pxeboot/initrd.img" \
+		--extra-args="inst.stage2=hd:LABEL=CentOS-Stream-9-BaseOS-x86_64 inst.ks=hd:LABEL=CentOS-Stream-9-BaseOS-x86_64:/classic.ks console=tty0 console=ttyS0,115200n8" \
+		--disk "device=cdrom,path=${LIBVIRT_STORAGE_DIR}/${ISO_NAME}-regular.iso,format=iso" \
+		--memory 4096 \
+		--graphics none \
+		--noautoconsole \
+		--noreboot
+
+vm-regular-clean:
+	@virsh --connect "${LIBVIRT_DEFAULT_URI}" destroy "regular" || echo not running
+	@virsh --connect "${LIBVIRT_DEFAULT_URI}" undefine "regular" --remove-all-storage || echo not defined
 
 vm-clean:
 	@virsh --connect "${LIBVIRT_DEFAULT_URI}" destroy "${LIBVIRT_VM_NAME}" || echo not running

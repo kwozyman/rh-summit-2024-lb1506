@@ -67,6 +67,7 @@ vm-regular:
 	sudo virt-builder --root-password=password:bifrost centosstream-9 \
 		--install "podman" \
 		--edit '/etc/ssh/sshd_config:s/#PermitRootLogin prohibit-password/PermitRootLogin yes/' \
+		--copy-in certs/004-summit.conf:/etc/containers/registries.conf.d/004-summit.conf \
 		--output "${LIBVIRT_STORAGE_DIR}/regular.img"
 	virt-install --connect "${LIBVIRT_DEFAULT_URI}" \
 		--name "regular" \

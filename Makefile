@@ -15,6 +15,8 @@ LIBVIRT_VM_NAME ?= bifrost
 ISO_URL ?= https://mirror.stream.centos.org/9-stream/BaseOS/x86_64/iso/CentOS-Stream-9-latest-x86_64-boot.iso
 ISO_NAME ?= rhel-boot
 
+CC_QCOW_URL ?= https://cloud.centos.org/centos/9-stream/x86_64/images/CentOS-Stream-GenericCloud-9-latest.x86_64.qcow2
+
 CONTAINER ?= summit.registry/bifrost:latest
 CONTAINERFILE ?= Containerfile
 
@@ -62,19 +64,19 @@ vm:
 vm-regular:
 	ssh-keygen -R regular-vm
 	ssh-keygen -R 192.168.150.101
-	sudo rm -f "${LIBVIRT_STORAGE_DIR}/${ISO_NAME}-regular.iso"
-	sudo mkksiso --ks templates/classic.ks "${LIBVIRT_STORAGE_DIR}/${ISO_NAME}.iso" "${LIBVIRT_STORAGE_DIR}/${ISO_NAME}-regular.iso"
+	sudo virt-builder --root-password=password:bifrost centosstream-9 \
+		--install "podman" \
+		--edit '/etc/ssh/sshd_config:s/#PermitRootLogin prohibit-password/PermitRootLogin yes/' \
+		--output "${LIBVIRT_STORAGE_DIR}/regular.img"
 	virt-install --connect "${LIBVIRT_DEFAULT_URI}" \
 		--name "regular" \
-		--disk "pool=${LIBVIRT_STORAGE},size=50" \
+		--disk "${LIBVIRT_STORAGE_DIR}/regular.img" \
+		--import \
 		--network "network=${LIBVIRT_NETWORK},mac=de:ad:be:ef:01:02" \
-		--location "${LIBVIRT_STORAGE_DIR}/${ISO_NAME}-regular.iso,kernel=images/pxeboot/vmlinuz,initrd=images/pxeboot/initrd.img" \
-		--extra-args="inst.stage2=hd:LABEL=CentOS-Stream-9-BaseOS-x86_64 inst.ks=hd:LABEL=CentOS-Stream-9-BaseOS-x86_64:/classic.ks console=tty0 console=ttyS0,115200n8" \
-		--disk "device=cdrom,path=${LIBVIRT_STORAGE_DIR}/${ISO_NAME}-regular.iso,format=iso" \
 		--memory 4096 \
 		--graphics none \
 		--noautoconsole \
-		--noreboot
+		--osinfo centos-stream9
 
 vm-regular-clean:
 	@virsh --connect "${LIBVIRT_DEFAULT_URI}" destroy "regular" || echo not running
@@ -123,7 +125,7 @@ setup-pull:
 
 system-setup:
 	sudo usermod -a -G libvirt lab-user
-	sudo dnf install -y qemu-kvm jq
+	sudo dnf install -y qemu-kvm jq guestfs-tools
 	sudo systemctl start libvirtd
 	sudo sysctl -w net.ipv4.ip_unprivileged_port_start=80
 	git config pull.rebase true

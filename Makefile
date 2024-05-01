@@ -87,6 +87,15 @@ vm-regular:
 		--noautoconsole \
 		--osinfo centos-stream9
 
+vm-qcow:
+	ssh-keygen -R "${LIBVIRT_QCOW_VM_NAME}-vm"
+	ssh-keygen -R 192.168.150.102
+	sudo cp qcow2/disk.qcow2 "${LIBVIRT_STORAGE_DIR}/${LIBVIRT_QCOW_VM_NAME}.qcow2"
+
+vm-qcow-clean:
+	@virsh --connect "${LIBVIRT_DEFAULT_URI}" destroy "${LIBVIRT_QCOW_VM_NAME}" || echo not running
+	@virsh --connect "${LIBVIRT_DEFAULT_URI}" undefine "${LIBVIRT_QCOW_VM_NAME}" --remove-all-storage || echo not defined
+
 vm-regular-clean:
 	@virsh --connect "${LIBVIRT_DEFAULT_URI}" destroy "${LIBVIRT_REGULAR_VM_NAME}" || echo not running
 	@virsh --connect "${LIBVIRT_DEFAULT_URI}" undefine "${LIBVIRT_REGULAR_VM_NAME}" --remove-all-storage || echo not defined
@@ -115,6 +124,7 @@ qcow:
 
 qcow-clean:
 	sudo rm -rf qcow2/
+	sudo rm -f manifest-qcow2.json
 
 iso:
 	sudo rm -f "${LIBVIRT_STORAGE_DIR}/${ISO_NAME}-custom.iso"

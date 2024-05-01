@@ -25,7 +25,7 @@ CONTAINERFILE ?= Containerfile
 
 REGISTRY_POD ?= registry-pod.yaml
 
-.PHONY: certs
+.PHONY: certs templates
 
 setup: setup-pull vm-setup iso-download registry-certs ssh templates registry
 clean: vm-clean iso-clean registry-certs-clean
@@ -102,6 +102,19 @@ ssh:
 templates:
 	@cat templates/config-qcow2.json | jq ".blueprint.customizations.user[0].key=\"$(shell cat ~/.ssh/id_rsa.pub)\"" > config/config-qcow2.json
 	@cat templates/kickstart.ks | sed "s^SSHKEY^$(shell cat ~/.ssh/id_rsa.pub)^g" > config/kickstart.ks
+
+qcow:
+	sudo podman run --rm -it --privileged \
+		-v .:/output \
+		-v $(shell pwd)/config/config-qcow2.json:/config.json \
+		"${BOOTC_IMAGE_BUILDER}" \
+		--type qcow2 \
+		--config /config.json \
+		--tls-verify=false \
+		"${CONTAINER}"
+
+qcow-clean:
+	sudo rm -rf qcow2/
 
 iso:
 	sudo rm -f "${LIBVIRT_STORAGE_DIR}/${ISO_NAME}-custom.iso"

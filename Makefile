@@ -1,8 +1,10 @@
-#BOOTC_IMAGE ?= registry.redhat.io/rhel9/rhel-bootc:9.4
-BOOTC_IMAGE ?= quay.io/centos-bootc/centos-bootc:stream9
+BOOTC_IMAGE ?= registry.redhat.io/rhel9/rhel-bootc:9.4
+#BOOTC_IMAGE ?= quay.io/centos-bootc/centos-bootc:stream9
+BOOTC_IMAGE_CS ?= quay.io/centos-bootc/centos-bootc:stream9
 
-#BOOTC_IMAGE_BUILDER ?= registry.redhat.io/rhel9/bootc-image-builder:9.4
-BOOTC_IMAGE_BUILDER ?= quay.io/centos-bootc/bootc-image-builder:latest
+BOOTC_IMAGE_BUILDER ?= registry.redhat.io/rhel9/bootc-image-builder:9.4
+#BOOTC_IMAGE_BUILDER ?= quay.io/centos-bootc/bootc-image-builder:latest
+BOOTC_IMAGE_BUILDER_CS ?= quay.io/centos-bootc/bootc-image-builder:latest
 
 LIBVIRT_DEFAULT_URI ?= qemu:///system
 LIBVIRT_NETWORK ?= summit-network
@@ -163,7 +165,9 @@ registry-purge:
 	podman volume rm summit-registry || echo not found
 
 setup-pull:
+	podman login --get-login registry.redhat.io
 	podman pull "${BOOTC_IMAGE}" "${BOOTC_IMAGE_BUILDER}" \
+		"${BOOTC_IMAGE_CS}" "${BOOTC_IMAGE_BUILDER_CS}" \
 		registry.access.redhat.com/ubi9/ubi-minimal registry.access.redhat.com/ubi9/ubi \
 		quay.io/kwozyman/toolbox:httpd quay.io/kwozyman/toolbox:registry
 	sudo podman pull "${BOOTC_IMAGE_BUILDER}"

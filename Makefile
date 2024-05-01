@@ -2,9 +2,7 @@ BOOTC_IMAGE ?= registry.redhat.io/rhel9/rhel-bootc:9.4
 #BOOTC_IMAGE ?= quay.io/centos-bootc/centos-bootc:stream9
 BOOTC_IMAGE_CS ?= quay.io/centos-bootc/centos-bootc:stream9
 
-BOOTC_IMAGE_BUILDER ?= registry.redhat.io/rhel9/bootc-image-builder:9.4
-#BOOTC_IMAGE_BUILDER ?= quay.io/centos-bootc/bootc-image-builder:latest
-BOOTC_IMAGE_BUILDER_CS ?= quay.io/centos-bootc/bootc-image-builder:latest
+BOOTC_IMAGE_BUILDER ?= quay.io/centos-bootc/bootc-image-builder:latest
 
 LIBVIRT_DEFAULT_URI ?= qemu:///system
 LIBVIRT_NETWORK ?= summit-network
@@ -190,3 +188,17 @@ run-test:
 	podman run --rm --name http-test --detach --publish 80:80 "${CONTAINER}"
 stop-test:
 	podman stop http-test
+
+status:
+	git status
+	podman login --get-login registry.redhat.io
+	podman image exists "${BOOTC_IMAGE}"
+	podman image exists "${BOOTC_IMAGE_BUILDER}"
+	podman image exists registry.access.redhat.com/ubi9/ubi-minimal
+	podman image exists registry.access.redhat.com/ubi9/ubi
+	podman image exists quay.io/kwozyman/toolbox:httpd
+	podman image exists quay.io/kwozyman/toolbox:registry
+	@systemctl status libvirtd.service | grep Active
+	@virsh --connect "${}" list
+	@rpm -q qemu-kvm jq guestfs-tools
+	@sysctl net.ipv4.ip_unprivileged_port_start

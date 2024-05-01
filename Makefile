@@ -75,6 +75,7 @@ vm-regular:
 		--install "podman" \
 		--edit '/etc/ssh/sshd_config:s/#PermitRootLogin prohibit-password/PermitRootLogin yes/' \
 		--copy-in certs/004-summit.conf:/etc/containers/registries.conf.d/ \
+		--ssh-inject 'root:string:$(shell cat ~/.ssh/id_rsa.pub)' \
 		--output "${LIBVIRT_STORAGE_DIR}/${LIBVIRT_REGULAR_VM_NAME}.img"
 	virt-install --connect "${LIBVIRT_DEFAULT_URI}" \
 		--name "${LIBVIRT_REGULAR_VM_NAME}" \
@@ -143,7 +144,8 @@ system-setup:
 	sudo -u $(shell whoami) bash
 
 build:
-	podman build --file "${CONTAINERFILE}" --tag "${CONTAINER}"
+	podman build --file "${CONTAINERFILE}" --tag "${CONTAINER}" \
+		--build-arg SSHPUBKEY="$(shell cat ~/.ssh/id_rsa.pub)"
 push:
 	podman push "${CONTAINER}"
 run-test:

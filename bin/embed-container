@@ -16,6 +16,9 @@ standard_ks () {
   fi
   echo user --name="lab-user" --groups=wheel --plaintext --password=bifrost
   echo rootpw bifrost
+  echo %post
+  echo install -o root -g root -m400 \<\(echo -e \'%wheel\\tALL=\(ALL\)\\tNOPASSWD: ALL\'\) /etc/sudoers.d/freewheelers
+  echo %end
   echo poweroff
 }
 

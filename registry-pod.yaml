@@ -20,7 +20,7 @@ spec:
       type: Directory
   hostname: summit.registry
   containers:
-  - image: docker.io/library/registry:2.8.3
+  - image: quay.io/kwozyman/toolbox:registry
     name: registry
     env:
       - name: REGISTRY_HTTP_TLS_CERTIFICATE
@@ -37,7 +37,7 @@ spec:
         name: summit-registry
       - mountPath: /certs
         name: registry-certs
-#  - image: docker.io/library/httpd:2.4.59
+#  - image: quay.io/kwozyman/toolbox:httpd
 #    name: httpd
 #    ports:
 #    - containerPort: 80

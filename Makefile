@@ -1,9 +1,7 @@
 #BOOTC_IMAGE ?= registry.redhat.io/rhel9/rhel-bootc:9.4
-#BOOTC_IMAGE ?= registry.redhat.io/rhel9-beta/rhel-bootc:9.4
 BOOTC_IMAGE ?= quay.io/centos-bootc/centos-bootc:stream9
 
 #BOOTC_IMAGE_BUILDER ?= registry.redhat.io/rhel9/bootc-image-builder:9.4
-#BOOTC_IMAGE_BUILDER ?= registry.redhat.io/rhel9-beta/bootc-image-builder:9.4
 BOOTC_IMAGE_BUILDER ?= quay.io/centos-bootc/bootc-image-builder:latest
 
 LIBVIRT_DEFAULT_URI ?= qemu:///system
@@ -167,7 +165,8 @@ registry-purge:
 setup-pull:
 	podman pull "${BOOTC_IMAGE}" "${BOOTC_IMAGE_BUILDER}" \
 		registry.access.redhat.com/ubi9/ubi-minimal registry.access.redhat.com/ubi9/ubi \
-		docker.io/library/httpd:2.4.59 docker.io/library/registry:2.8.3
+		quay.io/kwozyman/toolbox:httpd quay.io/kwozyman/toolbox:registry
+	sudo podman pull "${BOOTC_IMAGE_BUILDER}"
 
 system-setup:
 	sudo usermod -a -G libvirt lab-user

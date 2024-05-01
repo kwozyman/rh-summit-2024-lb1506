@@ -172,7 +172,7 @@ setup-pull:
 
 system-setup:
 	sudo usermod -a -G libvirt lab-user
-	sudo dnf install -y qemu-kvm jq guestfs-tools
+	sudo dnf install -y qemu-kvm jq guestfs-tools nano
 	sudo systemctl start libvirtd
 	sudo sysctl -w net.ipv4.ip_unprivileged_port_start=80
 	git config pull.rebase true
@@ -200,5 +200,5 @@ status:
 	podman image exists quay.io/kwozyman/toolbox:registry
 	@systemctl status libvirtd.service | grep Active
 	@virsh --connect "${}" list
-	@rpm -q qemu-kvm jq guestfs-tools
+	@rpm -q qemu-kvm jq guestfs-tools nano
 	@sysctl net.ipv4.ip_unprivileged_port_start

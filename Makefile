@@ -202,3 +202,4 @@ status:
 	@virsh --connect "${}" list
 	@rpm -q qemu-kvm jq guestfs-tools nano
 	@sysctl net.ipv4.ip_unprivileged_port_start
+	@podman stats --no-stream --no-reset summit-registry

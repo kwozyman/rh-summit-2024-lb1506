@@ -28,12 +28,13 @@ REGISTRY_POD ?= registry-pod.yaml
 .PHONY: certs templates
 
 setup: setup-pull vm-setup iso-download registry-certs ssh templates registry
-clean: vm-clean iso-clean registry-certs-clean
+clean: vm-setup-clean iso-clean qcow-clean templates-clean registry-certs-clean
 
 setup-registry: registry-certs registry
 
 vm-setup: vm-setup-network vm-setup-storage
-vm-clean-all: vm-clean vm-clean-network vm-clean-storage
+vm-setup-clean: vm-clean-all vm-clean-network vm-clean-storage
+vm-clean-all: vm-regular-clean vm-iso-clean vm-qcow-clean
 
 vm-setup-network:
 	grep summit.registry /etc/hosts || sudo bash -c "echo 192.168.150.1 summit.registry >> /etc/hosts"
@@ -118,6 +119,10 @@ ssh:
 templates:
 	@cat templates/config-qcow2.json | jq ".blueprint.customizations.user[0].key=\"$(shell cat ~/.ssh/id_rsa.pub)\"" > config/config-qcow2.json
 	@cat templates/kickstart.ks | sed "s^SSHKEY^$(shell cat ~/.ssh/id_rsa.pub)^g" > config/kickstart.ks
+
+templates-clean:
+	rm -f config/kickstart.ks
+	rm -f config/config-qcow2.json
 
 qcow:
 	sudo podman run --rm -it --privileged \

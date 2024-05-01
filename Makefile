@@ -91,6 +91,13 @@ vm-qcow:
 	ssh-keygen -R "${LIBVIRT_QCOW_VM_NAME}-vm"
 	ssh-keygen -R 192.168.150.102
 	sudo cp qcow2/disk.qcow2 "${LIBVIRT_STORAGE_DIR}/${LIBVIRT_QCOW_VM_NAME}.qcow2"
+	virt-install --connect "${LIBVIRT_DEFAULT_URI}" \
+		--name "${LIBVIRT_QCOW_VM_NAME}" \
+		--disk "${LIBVIRT_STORAGE_DIR}/${LIBVIRT_QCOW_VM_NAME}.qcow2" \
+		--network "network=${LIBVIRT_NETWORK},mac=de:ad:be:ef:01:03" \
+		--memory 4096 \
+		--graphics none \
+		--noreboot
 
 vm-qcow-clean:
 	@virsh --connect "${LIBVIRT_DEFAULT_URI}" destroy "${LIBVIRT_QCOW_VM_NAME}" || echo not running

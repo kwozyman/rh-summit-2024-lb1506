@@ -37,8 +37,9 @@ vm-clean-all: vm-clean vm-clean-network vm-clean-storage
 
 vm-setup-network:
 	grep summit.registry /etc/hosts || sudo bash -c "echo 192.168.150.1 summit.registry >> /etc/hosts"
-	grep iso-vm /etc/hosts || sudo bash -c "echo 192.168.150.100 iso-vm >> /etc/hosts"
-	grep regular-vm /etc/hosts || sudo bash -c "echo 192.168.150.101 regular-vm >> /etc/hosts"
+	grep "${LIBVIRT_ISO_VM_NAME}-vm" /etc/hosts || sudo bash -c "echo 192.168.150.100 ${LIBVIRT_ISO_VM_NAME}-vm >> /etc/hosts"
+	grep "${LIBVIRT_REGULAR_VM_NAME}-vm" /etc/hosts || sudo bash -c "echo 192.168.150.101 ${LIBVIRT_REGULAR_VM_NAME}-vm >> /etc/hosts"
+	grep "${LIBVIRT_QCOW_VM_NAME}-vm" /etc/hosts || sudo bash -c "echo 192.168.150.102 ${LIBVIRT_QCOW_VM_NAME}-vm >> /etc/hosts"
 	virsh --connect "${LIBVIRT_DEFAULT_URI}" net-create --file libvirt/network.xml
 
 vm-setup-storage:
@@ -63,6 +64,9 @@ vm-iso:
 		--memory 4096 \
 		--graphics none \
 		--noreboot
+
+vm-iso-start:
+	virsh --connect "${LIBVIRT_DEFAULT_URI}" start "${LIBVIRT_ISO_VM_NAME}"
 
 vm-regular:
 	ssh-keygen -R regular-vm

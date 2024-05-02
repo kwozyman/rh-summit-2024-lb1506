@@ -164,8 +164,7 @@ registry-purge:
 
 setup-pull:
 	podman login --get-login registry.redhat.io
-	podman pull "${BOOTC_IMAGE}" "${BOOTC_IMAGE_BUILDER}" \
-		"${BOOTC_IMAGE_CS}" "${BOOTC_IMAGE_BUILDER_CS}" \
+	podman pull "${BOOTC_IMAGE}" "${BOOTC_IMAGE_BUILDER}" "${BOOTC_IMAGE_CS}" \
 		registry.access.redhat.com/ubi9/ubi-minimal registry.access.redhat.com/ubi9/ubi \
 		quay.io/kwozyman/toolbox:httpd quay.io/kwozyman/toolbox:registry
 	sudo podman pull "${BOOTC_IMAGE_BUILDER}"

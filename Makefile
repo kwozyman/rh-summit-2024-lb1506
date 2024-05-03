@@ -26,7 +26,7 @@ REGISTRY_POD ?= registry-pod.yaml
 
 .PHONY: certs templates
 
-setup: system-setup setup-pull vm-setup iso-download registry-certs ssh templates registry
+setup: system-setup vm-setup iso-download registry-certs ssh templates registry
 clean: vm-setup-clean iso-clean qcow-clean templates-clean registry-certs-clean
 
 setup-registry: registry-certs registry
@@ -174,7 +174,7 @@ setup-pull:
 	podman pull "${BOOTC_IMAGE}" "${BOOTC_IMAGE_BUILDER}" "${BOOTC_IMAGE_CS}" \
 		registry.access.redhat.com/ubi9/ubi-minimal registry.access.redhat.com/ubi9/ubi \
 		quay.io/kwozyman/toolbox:httpd quay.io/kwozyman/toolbox:registry
-	sudo podman pull "${BOOTC_IMAGE_BUILDER}" "${BOOTC_IMAGE_BUILDER_CS}"
+	sudo podman pull --authfile "${XDG_RUNTIME_DIR}/containers/auth.json" "${BOOTC_IMAGE_BUILDER}" "${BOOTC_IMAGE_BUILDER_CS}"
 
 system-setup:
 	sudo sysctl -w net.ipv4.ip_unprivileged_port_start=80

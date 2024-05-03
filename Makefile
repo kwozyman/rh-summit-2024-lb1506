@@ -26,7 +26,7 @@ REGISTRY_POD ?= registry-pod.yaml
 
 .PHONY: certs templates
 
-setup: system-setup vm-setup iso-download registry-certs ssh templates registry
+setup: system-setup vm-setup registry-certs ssh templates registry iso-download setup-pull
 clean: vm-setup-clean iso-clean qcow-clean templates-clean registry-certs-clean
 
 setup-registry: registry-certs registry

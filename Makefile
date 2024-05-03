@@ -78,7 +78,8 @@ vm-regular:
 		--edit '/etc/ssh/sshd_config:s/#PermitRootLogin prohibit-password/PermitRootLogin yes/' \
 		--copy-in certs/004-summit.conf:/etc/containers/registries.conf.d/ \
 		--ssh-inject 'root:string:$(shell cat ~/.ssh/id_rsa.pub)' \
-		--output "${LIBVIRT_STORAGE_DIR}/${LIBVIRT_REGULAR_VM_NAME}.img"
+		--output "${LIBVIRT_STORAGE_DIR}/${LIBVIRT_REGULAR_VM_NAME}.img" \
+		--size 50G
 	virt-install --connect "${LIBVIRT_DEFAULT_URI}" \
 		--name "${LIBVIRT_REGULAR_VM_NAME}" \
 		--disk "${LIBVIRT_STORAGE_DIR}/${LIBVIRT_REGULAR_VM_NAME}.img" \
@@ -87,7 +88,8 @@ vm-regular:
 		--memory 4096 \
 		--graphics none \
 		--noautoconsole \
-		--osinfo centos-stream9
+		--osinfo centos-stream9 \
+		--noreboot
 	virsh --connect "${LIBVIRT_DEFAULT_URI}" start "${LIBVIRT_REGULAR_VM_NAME}"
 
 vm-qcow:
@@ -180,6 +182,7 @@ system-setup:
 	sudo sysctl -w net.ipv4.ip_unprivileged_port_start=80
 	git config pull.rebase true
 	echo "export LIBVIRT_DEFAULT_URI=${LIBVIRT_DEFAULT_URI}" >> ~/.bashrc
+	touch /home/lab-user/.ssh/known_hosts && chmod 600 /home/lab-user/.ssh/known_hosts
 
 build:
 	podman build --file "${CONTAINERFILE}" --tag "${CONTAINER}" \

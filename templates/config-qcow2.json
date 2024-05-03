@@ -3,7 +3,7 @@
     "customizations": {
       "user": [
         {
-          "name": "cloud-user",
+          "name": "lab-user",
           "password": "bifrost",
           "key": "",
           "groups": [

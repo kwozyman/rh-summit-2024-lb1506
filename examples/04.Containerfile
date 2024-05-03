@@ -1,9 +1,8 @@
 FROM registry.redhat.io/rhel9/rhel-bootc:9.4
 
 RUN dnf install -y httpd
-RUN echo Hello RedHat > /var/www/html/index.html
+RUN echo Hello RedHat Summit 2024 > /var/www/html/index.html
 RUN systemctl enable httpd
-
 
 ADD certs/004-summit.conf /etc/containers/registries.conf.d/004-summit.conf
 

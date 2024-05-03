@@ -26,7 +26,7 @@ REGISTRY_POD ?= registry-pod.yaml
 
 .PHONY: certs templates
 
-setup: setup-pull vm-setup iso-download registry-certs ssh templates registry
+setup: system-setup setup-pull vm-setup iso-download registry-certs ssh templates registry
 clean: vm-setup-clean iso-clean qcow-clean templates-clean registry-certs-clean
 
 setup-registry: registry-certs registry
@@ -177,13 +177,9 @@ setup-pull:
 	sudo podman pull "${BOOTC_IMAGE_BUILDER}" "${BOOTC_IMAGE_BUILDER_CS}"
 
 system-setup:
-	sudo usermod -a -G libvirt lab-user
-	sudo dnf install -y qemu-kvm jq guestfs-tools nano
-	sudo systemctl start libvirtd
 	sudo sysctl -w net.ipv4.ip_unprivileged_port_start=80
 	git config pull.rebase true
 	echo "export LIBVIRT_DEFAULT_URI=${LIBVIRT_DEFAULT_URI}" >> ~/.bashrc
-	sudo -u $(shell whoami) bash
 
 build:
 	podman build --file "${CONTAINERFILE}" --tag "${CONTAINER}" \
@@ -206,6 +202,5 @@ status:
 	podman image exists quay.io/kwozyman/toolbox:registry
 	@systemctl status libvirtd.service | grep Active
 	@virsh --connect "${}" list
-	@rpm -q qemu-kvm jq guestfs-tools nano
 	@sysctl net.ipv4.ip_unprivileged_port_start
 	@podman stats --no-stream --no-reset summit-registry

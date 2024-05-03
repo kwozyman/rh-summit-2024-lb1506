@@ -9,13 +9,13 @@ Welcome to LB1506, "Unleashing container OS". This repo contains all the necessa
 First, clone this repo on the provided host:
 
 ```
-git clone https://github.com/kwozyman/edge-os.git
+git clone https://github.com/kwozyman/rh-summit-2024-lb1506.git
 ```
 
 Change directory to the newly cloned repo and prepare the host system. This step should install a few packages and it should end with a fresh shell.
 
 ```
-cd edge-os/
+cd rh-summit-2024-lb1506/
 make system-setup
 ```
 

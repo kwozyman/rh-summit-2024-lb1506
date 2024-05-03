@@ -2,7 +2,8 @@ BOOTC_IMAGE ?= registry.redhat.io/rhel9/rhel-bootc:9.4
 #BOOTC_IMAGE ?= quay.io/centos-bootc/centos-bootc:stream9
 BOOTC_IMAGE_CS ?= quay.io/centos-bootc/centos-bootc:stream9
 
-BOOTC_IMAGE_BUILDER ?= quay.io/centos-bootc/bootc-image-builder:latest
+BOOTC_IMAGE_BUILDER ?= registry.redhat.io/rhel9/bootc-image-builder:latest
+BOOTC_IMAGE_BUILDER_CS ?= quay.io/centos-bootc/bootc-image-builder:latest
 
 LIBVIRT_DEFAULT_URI ?= qemu:///system
 LIBVIRT_NETWORK ?= summit-network
@@ -62,7 +63,9 @@ vm-iso:
 		--extra-args="inst.ks=hd:LABEL=CentOS-Stream-9-BaseOS-x86_64:/local.ks console=tty0 console=ttyS0,115200n8" \
 		--memory 4096 \
 		--graphics none \
+		--osinfo rhel9-unknown \
 		--noreboot
+	virsh --connect "${LIBVIRT_DEFAULT_URI}" start "${LIBVIRT_ISO_VM_NAME}"
 
 vm-iso-start:
 	virsh --connect "${LIBVIRT_DEFAULT_URI}" start "${LIBVIRT_ISO_VM_NAME}"
@@ -85,6 +88,7 @@ vm-regular:
 		--graphics none \
 		--noautoconsole \
 		--osinfo centos-stream9
+	virsh --connect "${LIBVIRT_DEFAULT_URI}" start "${LIBVIRT_REGULAR_VM_NAME}"
 
 vm-qcow:
 	ssh-keygen -R "${LIBVIRT_QCOW_VM_NAME}-vm"
@@ -93,10 +97,14 @@ vm-qcow:
 	virt-install --connect "${LIBVIRT_DEFAULT_URI}" \
 		--name "${LIBVIRT_QCOW_VM_NAME}" \
 		--disk "${LIBVIRT_STORAGE_DIR}/${LIBVIRT_QCOW_VM_NAME}.qcow2" \
+		--import \
 		--network "network=${LIBVIRT_NETWORK},mac=de:ad:be:ef:01:03" \
 		--memory 4096 \
 		--graphics none \
+		--osinfo rhel9-unknown \
+		--noautoconsole \
 		--noreboot
+	virsh --connect "${LIBVIRT_DEFAULT_URI}" start "${LIBVIRT_QCOW_VM_NAME}"
 
 vm-qcow-clean:
 	@virsh --connect "${LIBVIRT_DEFAULT_URI}" destroy "${LIBVIRT_QCOW_VM_NAME}" || echo not running
@@ -112,7 +120,6 @@ vm-iso-clean:
 
 ssh:
 	@ssh-keygen -t ed25519 -f ~/.ssh/id_rsa -N ""
-	@ssh-add ~/.ssh/id_rsa
 
 templates:
 	@cat templates/config-qcow2.json | jq ".blueprint.customizations.user[0].key=\"$(shell cat ~/.ssh/id_rsa.pub)\"" > config/config-qcow2.json
@@ -167,7 +174,7 @@ setup-pull:
 	podman pull "${BOOTC_IMAGE}" "${BOOTC_IMAGE_BUILDER}" "${BOOTC_IMAGE_CS}" \
 		registry.access.redhat.com/ubi9/ubi-minimal registry.access.redhat.com/ubi9/ubi \
 		quay.io/kwozyman/toolbox:httpd quay.io/kwozyman/toolbox:registry
-	sudo podman pull "${BOOTC_IMAGE_BUILDER}"
+	sudo podman pull "${BOOTC_IMAGE_BUILDER}" "${BOOTC_IMAGE_BUILDER_CS}"
 
 system-setup:
 	sudo usermod -a -G libvirt lab-user

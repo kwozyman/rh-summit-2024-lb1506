@@ -17,10 +17,10 @@ firewall --disabled
 services --enabled=sshd
 
 # optionally add a user
-user --name=cloud-user --groups=wheel --plaintext --password=bifrost
+user --name=cloud-user --groups=wheel --plaintext --password=lb1506
 sshkey --username cloud-user "SSHKEY"
 
 # if desired, inject a SSH key for root
-rootpw bifrost
+rootpw lb1506
 sshkey --username root "SSHKEY" #paste your ssh key here
 poweroff

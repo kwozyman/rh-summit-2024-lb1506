@@ -15,8 +15,8 @@ standard_ks () {
       echo sshkey --username lab-user \"$(cat ~/.ssh/id_rsa.pub)\"
       echo sshkey --username root \"$(cat ~/.ssh/id_rsa.pub)\"
   fi
-  echo user --name="lab-user" --groups=wheel --plaintext --password=bifrost
-  echo rootpw bifrost
+  echo user --name="lab-user" --groups=wheel --plaintext --password=lb1506
+  echo rootpw lb1506
   echo %post
   echo install -o root -g root -m400 \<\(echo -e \'%wheel\\tALL=\(ALL\)\\tNOPASSWD: ALL\'\) /etc/sudoers.d/freewheelers
   echo %end

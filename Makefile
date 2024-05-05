@@ -19,7 +19,7 @@ ISO_NAME ?= rhel-boot
 
 CC_QCOW_URL ?= https://cloud.centos.org/centos/9-stream/x86_64/images/CentOS-Stream-GenericCloud-9-latest.x86_64.qcow2
 
-CONTAINER ?= summit.registry/bifrost:latest
+CONTAINER ?= summit.registry/lb1506:latest
 CONTAINERFILE ?= Containerfile
 
 REGISTRY_POD ?= registry-pod.yaml
@@ -73,7 +73,7 @@ vm-iso-start:
 vm-regular:
 	ssh-keygen -R regular-vm
 	ssh-keygen -R 192.168.150.101
-	sudo virt-builder --root-password=password:bifrost centosstream-9 \
+	sudo virt-builder --root-password=password:lb1506 centosstream-9 \
 		--install "podman" \
 		--edit '/etc/ssh/sshd_config:s/#PermitRootLogin prohibit-password/PermitRootLogin yes/' \
 		--copy-in certs/004-summit.conf:/etc/containers/registries.conf.d/ \
@@ -182,6 +182,7 @@ system-setup:
 	sudo sysctl -w net.ipv4.ip_unprivileged_port_start=80
 	git config pull.rebase true
 	echo "export LIBVIRT_DEFAULT_URI=${LIBVIRT_DEFAULT_URI}" >> ~/.bashrc
+	mkdir -p /home/lab-user/.ssh && chmod 0700 /home/lab-user/.ssh
 	touch /home/lab-user/.ssh/known_hosts && chmod 600 /home/lab-user/.ssh/known_hosts
 
 build:

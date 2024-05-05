@@ -49,7 +49,7 @@ Create the first simple container. Edit a file named `Containerfile` in the curr
 FROM registry.access.redhat.com/ubi9/ubi
 
 RUN dnf install -y httpd
-RUN echo Hello RedHat > /var/www/html/index.html
+RUN echo "Hello Red Hat" > /var/www/html/index.html
 
 ENTRYPOINT /usr/sbin/httpd -DFOREGROUND
 ```
@@ -69,10 +69,10 @@ $ make build
 or manually:
 
 ```
-$ podman build --file Containerfile --tag summit.registry/bifrost:latest
+$ podman build --file Containerfile --tag summit.registry/lb1506:latest
 ```
 
-Any of the above, if succesful will create a simple container tagged `summit.registry/bifrost:latest` which is running an Apache http server on port 80, serving the classic "Hello RedHat" as it's index.html. In order to run and test it:
+Any of the above, if succesful will create a simple container tagged `summit.registry/lb1506:latest` which is running an Apache http server on port 80, serving the classic "Hello Red Hat" as it's index.html. In order to run and test it:
 
 ```
 $ make run-test
@@ -81,7 +81,7 @@ $ make run-test
 or manually:
 
 ```
-$ podman run --rm --name http-test --detach --publish 80:80 summit.registry/bifrost:latest
+$ podman run --rm --name http-test --detach --publish 80:80 summit.registry/lb1506:latest
 ```
 
 We can see if it's running with the same `podman ps` command we used previously:
@@ -91,14 +91,14 @@ $ podman ps
 CONTAINER ID  IMAGE                                    COMMAND               CREATED        STATUS        PORTS                 NAMES
 24afac6d41d8  localhost/podman-pause:4.6.1-1705652564                        7 minutes ago  Up 7 minutes  0.0.0.0:443->443/tcp  17ab9c8c510a-infra
 73974d580144  docker.io/library/registry:2.8.3         /etc/docker/regis...  7 minutes ago  Up 7 minutes  0.0.0.0:443->443/tcp  summit-registry
-d016e08062ab  summit.registry/bifrost:latest                                 2 seconds ago  Up 2 seconds  0.0.0.0:80->80/tcp    http-test
+d016e08062ab  summit.registry/lb1506:latest                                 2 seconds ago  Up 2 seconds  0.0.0.0:80->80/tcp    http-test
 ```
 
 ...and we can test it easily:
 
 ```
 $ curl http://localhost/
-Hello RedHat
+Hello Red Hat
 ```
 
 We can now stop the container:
@@ -135,7 +135,7 @@ The whole Containerfile should look like this:
 FROM quay.io/centos-bootc/centos-bootc:stream9
 
 RUN dnf install -y httpd
-RUN echo Hello RedHat > /var/www/html/index.html
+RUN echo "Hello Red Hat" > /var/www/html/index.html
 
 RUN systemctl enable httpd.service
 
@@ -152,11 +152,11 @@ and test it again locally:
 
 ```
 $ make run-test
-$ podman run --rm --name http-test --detach --publish 80:80 "summit.registry/bifrost:latest"
+$ podman run --rm --name http-test --detach --publish 80:80 "summit.registry/lb1506:latest"
 292cc9f0954e1b56444593a5d79b6555188670211a339cc8dd137b5cbf7e0f14
 
 $ curl http://localhost/                                                                                                                                              
-Hello RedHat
+Hello Red Hat
 
 $ make stop-test
 ```
@@ -181,24 +181,24 @@ $ make vm
 After a few minutes, the deployment should be complete and our vm stopped. It can be started with a simple `virsh` command:
 
 ```
-$ virsh --connect qemu:///system start bifrost
+$ virsh --connect qemu:///system start iso
 ```
 
 After giving it some time to boot, we can directly test our vm!
 
 ```
-$ curl http://bifrost-vm/
-Hello RedHat
+$ curl http://iso-vm/
+Hello Red Hat
 $ curl http://192.168.150.100/
-Hello RedHat
+Hello Red Hat
 ```
 
 5. Exploring the bootc machine
 ---
 
 ```
-# password is 'bifrost'
-$ ssh lab-user@bifrost-vm
+# password is 'lb1506'
+$ ssh lab-user@iso-vm
 
 $ rpm-ostree status
 ```

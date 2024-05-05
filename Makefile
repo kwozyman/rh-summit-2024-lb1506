@@ -85,7 +85,7 @@ vm-regular:
 		--disk "${LIBVIRT_STORAGE_DIR}/${LIBVIRT_REGULAR_VM_NAME}.img" \
 		--import \
 		--network "network=${LIBVIRT_NETWORK},mac=de:ad:be:ef:01:02" \
-		--memory 4096 \
+		--memory 16000\
 		--graphics none \
 		--noautoconsole \
 		--osinfo centos-stream9 \

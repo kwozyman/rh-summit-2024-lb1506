@@ -18,4 +18,4 @@ clearpart --all --initlabel --disklabel=gpt
 
 timezone America/New_York --utc
 
-rootpw bifrost --allow-ssh
+rootpw lb1506 --allow-ssh
